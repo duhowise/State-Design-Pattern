@@ -6,12 +6,12 @@
         
         public override void Cancel(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            bookingContext.TransitionToState(new ClosedState("Booking canceled:  Expect a refund"));
         }
 
         public override void DatePassed(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            bookingContext.TransitionToState(new ClosedState("We hope you Enjoyed the event"));
         }
 
         public override void EnterDetails(BookingContext bookingContext, string atendee, int ticketCount)
@@ -21,7 +21,8 @@
 
         public override void EnterState(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            bookingContext.ShowState("Booked");
+            bookingContext.View.ShowStatusPage("Enjoy the event");
         }
    
         

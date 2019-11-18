@@ -1,25 +1,32 @@
-﻿namespace State_Design_Pattern.Logic
+﻿using System;
+
+namespace State_Design_Pattern.Logic
 {
     public class NewState : BookingState
     {
         public override void Cancel(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            bookingContext.TransitionToState(new ClosedState("Booking Canceled"));
         }
 
         public override void DatePassed(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            bookingContext.TransitionToState(new ClosedState("Booking Expired"));
+
         }
 
-        public override void EnterDetails(BookingContext bookingContext, string atendee, int ticketCount)
+        public override void EnterDetails(BookingContext bookingContext, string attendee, int ticketCount)
         {
-            throw new System.NotImplementedException();
+            bookingContext.Attendee = attendee;
+            bookingContext.TicketCount = ticketCount;
+            bookingContext.TransitionToState(new PendingState());
         }
 
         public override void EnterState(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            bookingContext.BookingID = new Random().Next();
+            bookingContext.ShowState("New");
+            bookingContext.View.ShowEntryPage();
         }
     }
 }

@@ -1,36 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace State_Design_Pattern.Logic
 {
     public class PendingState : BookingState
     {
+        CancellationTokenSource cancellationToken;
 
 
         public override void Cancel(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.Cancel();
         }
 
         public override void DatePassed(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void EnterDetails(BookingContext bookingContext, string atendee, int ticketCount)
         {
-            throw new System.NotImplementedException();
         }
 
         public override void EnterState(BookingContext bookingContext)
         {
-            throw new System.NotImplementedException();
+            cancellationToken = new CancellationTokenSource();
+            bookingContext.ShowState("Pending");
+            bookingContext.View.ShowStatusPage("Processing booking");
+                StaticFunctions.ProcessBooking(bookingContext, ProcessingComplete, cancellationToken);
         }
 
-
+        private void ProcessingComplete(BookingContext booking, ProcessingResult result)
+        {
+            switch (result)
+            {
+                case ProcessingResult.Sucess:
+                    booking.TransitionToState(new NewState());
+                    break;
+                case ProcessingResult.Fail:
+                    booking.View.ShowProcessingError();
+                    booking.TransitionToState(new NewState());
+                    break;
+                case ProcessingResult.Cancel:
+                    booking.TransitionToState(new ClosedState("Processing Canceled"));
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     
 }
